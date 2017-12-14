@@ -1,0 +1,228 @@
+# 0X04 定义Lua
+
+Lua在官方的Document中给出了其语法的定义.在此我将介绍这些定义,练习EBNF顺便复习Lua.
+
+其实Lua的EBNF定义不太完全,其中的一些名词是通过自然语言描述的.我将尽量把这些内容用形式化的EBNF定义出来.对于不太符合我们刚刚介绍的ISO标准的写法我也会加以改写.
+
+由于Stage介绍EBNF自定义的时候我会采用构造性的顺序,这里我用一种不同的顺序--自顶向下.
+
+## syntax
+
+由于Lua语言以chunk为编译单位.这里我定义Lua的syntax等价于chunk.
+
+```EBNF
+syntax = chunk;
+```
+
+## chunk和block
+
+```EBNF
+chunk = block;
+block = {stat}, [retstat];
+```
+
+这里我们又用到了两个没有定义过的名词'stat'和'retstat'.它们就是指我们很熟悉的Lua语句和return语句.
+
+## 语句
+
+```EBNF
+stat = ';' |
+    varlist, '=', explist |
+    functioncall |
+    label |
+    'break' |
+    'goto', Name |
+    'do', block, 'end' |
+    'while', exp, 'do', block, 'end' |
+    'repeat', block, 'until', exp |
+    'if', exp, 'then', block, {'elseif', exp, 'then', block}, ['else', block], 'end' |
+    'for', Name, '=', exp, ',', exp, [',', exp], 'do', block, 'end' |
+    'for', namelist, 'in', explist, 'do', block, 'end' |
+    'function', funcname, funcbody |
+    'local', 'function', Name, funcbody |
+    'local', namelist, ['=', explist];
+```
+
+这个语句非常长,但是实际就是说明'stat'表示任意一条Lua中的语句.顺便定义了一些语句的结构.从上到下分别是:
+
+1. 空语句
+1. 赋值语句
+1. 函数调用
+1. 标签
+1. break语句
+1. goto语句
+1. do-end语句
+1. 当型循环语句
+1. 直到型循环语句
+1. 选择分支语句
+1. 计数型for循环
+1. 遍历型for循环
+1. 函数定义语句
+1. 带局部声明的函数定义语句(定义的函数名为局部变量)
+1. 局部变量声明和初始化语句
+
+其中又多出来很多的未定义词汇.我们将在后边逐个进行定义.
+
+注意这些语句的定义中,有的直接出现了block,体现了语句之间可以嵌套.
+
+上述的语句中并没有出现retstat,所以单独的retstat并不是stat.它必须在一个block中使用.
+
+现在我们定义retstat:
+
+```EBNF
+retstat = 'return', [explist], [';'];
+```
+
+## 标签
+
+以下是对标签语句的定义:
+
+```EBNF
+label = '::', Name, '::';
+```
+
+## 函数的定义和调用
+
+首先是函数名:
+
+```EBNF
+funcname = Name, {'.', Name}, [':', Name];
+```
+
+则函数定义语句如下:
+
+```EBNF
+functiondef = 'function', funcbody;
+```
+
+这里给出的定义方式是匿名函数的定义方式.它本身是一个表达式.之前stat的定义中出现的两种定义则是明明函数的定义方式.注意local和function连用的时候,不能把函数命名为funcname格式,而应该是Name格式.
+
+然后是函数体的定义:
+
+```EBNF
+funcbody = '(', [parlist], ')', block, end;
+```
+
+函数调用的语句如下:
+
+```EBNF
+functioncall = prefixexp, args | prefixexp, ':', Name, args;
+```
+
+注意这里定义的时候没有用funcname定义functioncall.因为函数不一定都有名字,有时候调用的是匿名函数.
+
+## 各种列表
+
+变量列表
+
+```EBNF
+varlist = var, {',', var};
+```
+
+表达式列表
+
+```EBNF
+explist = exp, {',', exp}
+```
+
+名称列表
+
+```EBNF
+namelist = Name, {',', Name}
+```
+
+## 变量和修饰表达式
+
+变量的定义
+
+```EBNF
+var = Name | prefixexp, '[', exp, ']' | prefixexp, '.', Name
+```
+
+这里的prefixexp在很多地方都出现了,它表示可以后加查表算符(方括号)或者成员运算(圆点)的内容.
+
+```EBNF
+prefixexp = var | functioncall | '(', exp, ')'
+```
+
+## 标识符(Name)
+
+标识符(Name),是一个非常重要的概念.标识符可以用来命名变量或者标签,很多语句的定义都用到了它.
+
+未定义:
+
+
+## 变量和变量列表
+
+```EBNF
+
+```
+
+## 表达式和表达式列表
+
+```EBNF
+exp = 'nil' | 'false' | 'true' | Numeral | LiteralString | '...' | functiondef | prefixexp | tableconstructor | exp, binop, exp | unop, exp
+```
+ 
+    
+        while exp do block end | 
+        repeat block until exp | 
+        if exp then block {elseif exp then block} [else block] end | 
+        for Name ‘=’ exp ‘,’ exp [‘,’ exp] do block end | 
+        for namelist in explist do block end | 
+        function funcname funcbody | 
+        local function Name funcbody | 
+        local namelist [‘=’ explist] 
+
+functioncall = prefixexp, args | prefixexp, ':', Name, args
+funcbody ::= ‘(’ [parlist] ‘)’ block end
+var ::=  Name | prefixexp ‘[’ exp ‘]’ | prefixexp ‘.’ Name 
+exp
+	exp ::=  nil | false | true | Numeral | LiteralString | ‘...’ | functiondef | 
+		 prefixexp | tableconstructor | exp binop exp | unop exp 
+         	namelist ::= Name {‘,’ Name}
+
+## 表达式(exp)
+
+## 标识符(Name)
+
+
+
+```EBNF
+Name
+```
+
+
+		 goto Name | 
+
+
+
+
+
+
+
+
+	prefixexp ::= var | functioncall | ‘(’ exp ‘)’
+
+	args ::=  ‘(’ [explist] ‘)’ | tableconstructor | LiteralString 
+
+
+
+	parlist ::= namelist [‘,’ ‘...’] | ‘...’
+
+	tableconstructor ::= ‘{’ [fieldlist] ‘}’
+
+	fieldlist ::= field {fieldsep field} [fieldsep]
+
+	field ::= ‘[’ exp ‘]’ ‘=’ exp | Name ‘=’ exp | exp
+
+	fieldsep ::= ‘,’ | ‘;’
+
+	binop ::=  ‘+’ | ‘-’ | ‘*’ | ‘/’ | ‘//’ | ‘^’ | ‘%’ | 
+		 ‘&’ | ‘~’ | ‘|’ | ‘>>’ | ‘<<’ | ‘..’ | 
+		 ‘<’ | ‘<=’ | ‘>’ | ‘>=’ | ‘==’ | ‘~=’ | 
+		 and | or
+
+	unop ::= ‘-’ | not | ‘#’ | ‘~’
+
+last update: fri feb 3 07:26:45 brst 2017
