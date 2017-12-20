@@ -14,4 +14,4 @@ This is a a series lessons about Backus Naur Form, lexical analysis and syntax a
 
 太玄的BNF课0Xnn cccc
 
-本教程已经同步到GitHub:https://github.com/TaiXuan91/TXBNFLesson
+本教程已经同步到GitHub:<https://github.com/TaiXuan91/TXBNFLesson>
