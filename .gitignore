@@ -6,6 +6,22 @@
 # Visual Studio Code
 .vscode
 
+# videos
+
+*.mp4
+*.flv
+
+# some images
+# except svg
+
+*.jpg
+*.png
+
+# images sources
+
+*.odg
+
+
 # User-specific files
 *.suo
 *.user
