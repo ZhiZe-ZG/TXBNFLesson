@@ -153,7 +153,6 @@ Rule           ::= OptionalSpace Name OptionalSpace "::=" OptionalSpace Expressi
 Comment        ::= OptionalSpace Literal OptionalSpace ";"
 ```
 
-
 源码不应该有换行或者tab,为了排版好看所有行尾之后自动加了换行.
 
 ```TXBNF3
@@ -197,13 +196,10 @@ Syntax         = Sentence | Sentence Syntax ;
 不需要,先定义的语法优先级高.越先定义,优先级越高.
 整个语法的定义可以是没有顺序的.
 
-
 预处理:
 
 1. 去掉所有的非可打印字符,换成一个空格(不仅仅是控制字符,还包括未定义的ASCII码)
 1. 处理循环,选择写法
-
-
 
 ## 扩展
 
@@ -266,7 +262,6 @@ grammar = { rule } ;
 [Wikipedia: Backus–Naur form](https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form)
 [Wikipedia: Extended Backus–Naur form](https://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_form)
 
-
 "::::Space::::" ;
 OptionalSpace  = "" | MoreSpace ;
 "::::Expression::::" ;
@@ -294,7 +289,6 @@ term equal term term term thenend
 tetttd
 
 然后搜索
-
 
 词法分析器
 二阶,三阶,任意阶词法分析
